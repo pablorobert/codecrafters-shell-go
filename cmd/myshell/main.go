@@ -31,6 +31,9 @@ func ParseCommand(str string) {
 			exitCode = 0
 		}
 		os.Exit(exitCode)
+	case "echo":
+		output := strings.Join(parts[1:], " ")
+		fmt.Printf("%s\n", output)
 	default:
 		fmt.Printf("%s: command not found\n", parts[0])
 	}
