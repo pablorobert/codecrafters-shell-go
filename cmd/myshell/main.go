@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"slices"
 	"strconv"
 	"strings"
@@ -48,8 +49,29 @@ func ParseCommand(str string) {
 		}
 
 	default:
-		fmt.Printf("%s: command not found\n", parts[0])
+		err := Execute(str)
+		if err != nil {
+			fmt.Printf("%s: command not found\n", parts[0])
+		}
 	}
+}
+
+func Execute(cmd string) error {
+	program := strings.Split(cmd, " ")
+	exe := program[0]
+
+	_, err := os.Stat(exe)
+	if err != nil {
+		return err
+	}
+
+	args := program[1:]
+	output, err := exec.Command(exe, args...).Output()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Fprintf(os.Stdout, "%v", string(output))
+	return nil
 }
 
 func GetPath(cmd string) {
