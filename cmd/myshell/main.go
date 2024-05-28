@@ -4,9 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
+
+var bultins []string = []string{"type", "echo", "exit"}
 
 func main() {
 	for {
@@ -16,7 +19,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		str = strings.Replace(str, "\n", "", -1)
+		str = strings.TrimSpace(str)
 		ParseCommand(str)
 	}
 }
@@ -34,6 +37,15 @@ func ParseCommand(str string) {
 	case "echo":
 		output := strings.Join(parts[1:], " ")
 		fmt.Printf("%s\n", output)
+	case "type":
+		theType := strings.TrimSpace(parts[1])
+		idx := slices.IndexFunc(bultins, func(c string) bool { return c == theType })
+
+		if idx == -1 {
+			fmt.Fprintf(os.Stdout, "%v not found\n", theType)
+		} else {
+			fmt.Fprintf(os.Stdout, "%v is a shell builtin\n", theType)
+		}
 	default:
 		fmt.Printf("%s: command not found\n", parts[0])
 	}
