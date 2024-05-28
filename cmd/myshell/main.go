@@ -38,15 +38,38 @@ func ParseCommand(str string) {
 		output := strings.Join(parts[1:], " ")
 		fmt.Printf("%s\n", output)
 	case "type":
-		theType := strings.TrimSpace(parts[1])
-		idx := slices.IndexFunc(bultins, func(c string) bool { return c == theType })
+		cmd := strings.TrimSpace(parts[1])
+		idx := slices.IndexFunc(bultins, func(c string) bool { return c == cmd })
 
 		if idx == -1 {
-			fmt.Fprintf(os.Stdout, "%v not found\n", theType)
+			GetPath(cmd)
 		} else {
-			fmt.Fprintf(os.Stdout, "%v is a shell builtin\n", theType)
+			fmt.Fprintf(os.Stdout, "%v is a shell builtin\n", cmd)
 		}
+
 	default:
 		fmt.Printf("%s: command not found\n", parts[0])
+	}
+}
+
+func GetPath(cmd string) {
+	path := os.Getenv("PATH")
+	parts := strings.Split(path, ":")
+	found := false
+	var exe string
+	for _, p := range parts {
+		exe = p + "/" + cmd
+		_, err := os.Stat(exe)
+		if err != nil {
+			continue
+		}
+		found = true
+		break
+	}
+
+	if found {
+		fmt.Fprintf(os.Stdout, "%v is %v\n", cmd, exe)
+	} else {
+		fmt.Fprintf(os.Stdout, "%v not found\n", cmd)
 	}
 }
