@@ -39,6 +39,9 @@ func ParseCommand(str string) {
 		output := strings.Join(parts[1:], " ")
 		fmt.Printf("%s\n", output)
 	case "cd":
+		if parts[1] == "~" {
+			parts[1] = os.Getenv("HOME")
+		}
 		_, err := os.Stat(parts[1])
 		if os.IsNotExist(err) {
 			fmt.Printf("%s: No such file or directory\n", parts[1])
