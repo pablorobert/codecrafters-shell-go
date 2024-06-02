@@ -38,6 +38,9 @@ func ParseCommand(str string) {
 	case "echo":
 		output := strings.Join(parts[1:], " ")
 		fmt.Printf("%s\n", output)
+	case "pwd":
+		output := os.Getenv("PWD")
+		fmt.Printf("%s\n", output)
 	case "type":
 		cmd := strings.TrimSpace(parts[1])
 		idx := slices.IndexFunc(bultins, func(c string) bool { return c == cmd })
