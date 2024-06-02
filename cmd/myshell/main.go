@@ -38,8 +38,18 @@ func ParseCommand(str string) {
 	case "echo":
 		output := strings.Join(parts[1:], " ")
 		fmt.Printf("%s\n", output)
+	case "cd":
+		_, err := os.Stat(parts[1])
+		if os.IsNotExist(err) {
+			fmt.Printf("%s: No such file or directory\n", parts[1])
+			return
+		}
+		os.Chdir(parts[1])
 	case "pwd":
-		output := os.Getenv("PWD")
+		output, err := os.Getwd()
+		if err != nil {
+			panic(err)
+		}
 		fmt.Printf("%s\n", output)
 	case "type":
 		cmd := strings.TrimSpace(parts[1])
