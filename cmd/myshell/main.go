@@ -56,7 +56,6 @@ func ParseCommand(str string) {
 				}
 				if runeValue == ' ' {
 					inSpace = true
-					returnStr.WriteString(string(runeValue))
 				} else {
 					inSpace = false
 				}
