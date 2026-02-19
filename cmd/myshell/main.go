@@ -41,7 +41,8 @@ func handleCat(parts []string) {
 		return
 	}
 	for i := 1; i < len(parts); i++ {
-		data, err := os.ReadFile(parts[i])
+		fileName := parseSingleQuotes(parts[i])
+		data, err := os.ReadFile(fileName)
 		if err != nil {
 			fmt.Println("Error while reading file")
 			return
@@ -52,23 +53,7 @@ func handleCat(parts []string) {
 	fmt.Print(result)
 }
 
-
-func ParseCommand(str string) {
-	parts := strings.Split(str, " ")
-	switch parts[0] {
-	case "exit":
-		if len(parts) < 2 {
-			os.Exit(0)
-		}
-		var exitCode int
-		exitCode, err := strconv.Atoi(parts[1])
-		if err != nil {
-			exitCode = 0
-		}
-		os.Exit(exitCode)
-	case "echo":
-		output := strings.Join(parts[1:], " ")
-		parseSingleQuotes := func(str string) string {
+func parseSingleQuotes(str string) string {
 			var quoteCount int
 			var inSpace bool
 			var returnStr strings.Builder
@@ -99,6 +84,24 @@ func ParseCommand(str string) {
 
 			return returnStr.String()
 		}
+		
+
+
+func ParseCommand(str string) {
+	parts := strings.Split(str, " ")
+	switch parts[0] {
+	case "exit":
+		if len(parts) < 2 {
+			os.Exit(0)
+		}
+		var exitCode int
+		exitCode, err := strconv.Atoi(parts[1])
+		if err != nil {
+			exitCode = 0
+		}
+		os.Exit(exitCode)
+	case "echo":
+		output := strings.Join(parts[1:], " ") 
 		output = parseSingleQuotes(output)
 		fmt.Printf("%s\n", output)
 	case "cd":
