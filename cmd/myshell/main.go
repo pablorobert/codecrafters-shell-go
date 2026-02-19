@@ -18,9 +18,9 @@ func main() {
 	signal.Notify(sigTerm, os.Interrupt)
     go func() {		
 		<-sigTerm
-			fmt.Println("Received SIGTERM signal")
-        	os.Exit(1)
-		
+
+		fmt.Println("Received SIGTERM signal")
+		os.Exit(1)
     }()
 	for {
 		fmt.Fprint(os.Stdout, "$ ")
@@ -35,16 +35,21 @@ func main() {
 }
 
 func handleCat(parts []string) {
+	result := ""
 	if len(parts) < 2 {
 		fmt.Println("cat: missing file operand")
 		return
 	}
-	data, err := os.ReadFile(parts[1])
-	if err != nil {
-		fmt.Println("Error while reading file")
-		return
+	for i := 1; i < len(parts); i++ {
+		data, err := os.ReadFile(parts[i])
+		if err != nil {
+			fmt.Println("Error while reading file")
+			return
+		}
+		result = result + fmt.Sprintf("%s\n", string(data))
 	}
-	fmt.Println(string(data))
+	result += "\n"
+	fmt.Print(result)
 }
 
 
