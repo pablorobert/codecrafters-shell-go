@@ -5,14 +5,23 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/signal"
 	"slices"
 	"strconv"
 	"strings"
 )
 
-var bultins []string = []string{"type", "echo", "exit"}
+var bultins []string = []string{"type", "echo", "exit", "cat"}
 
 func main() {
+	sigTerm := make(chan os.Signal, 1)
+	signal.Notify(sigTerm, os.Interrupt)
+    go func() {		
+		<-sigTerm
+			fmt.Println("Received SIGTERM signal")
+        	os.Exit(1)
+		
+    }()
 	for {
 		fmt.Fprint(os.Stdout, "$ ")
 		// Wait for user input
@@ -25,10 +34,27 @@ func main() {
 	}
 }
 
+func handleCat(parts []string) {
+	if len(parts) < 2 {
+		fmt.Println("cat: missing file operand")
+		return
+	}
+	data, err := os.ReadFile(parts[1])
+	if err != nil {
+		fmt.Println("Error while reading file")
+		return
+	}
+	fmt.Println(string(data))
+}
+
+
 func ParseCommand(str string) {
 	parts := strings.Split(str, " ")
 	switch parts[0] {
 	case "exit":
+		if len(parts) < 2 {
+			os.Exit(0)
+		}
 		var exitCode int
 		exitCode, err := strconv.Atoi(parts[1])
 		if err != nil {
@@ -95,8 +121,22 @@ func ParseCommand(str string) {
 		} else {
 			fmt.Fprintf(os.Stdout, "%v is a shell builtin\n", cmd)
 		}
+	case "cat":
+		/*if len(parts) < 2 {
+			fmt.Println("cat: missing file operand")
+			return
+		}
+		cmd := strings.TrimSpace(parts[1])
+		idx := slices.IndexFunc(bultins, func(c string) bool { return c == cmd })
 
+		if idx == -1 {
+			GetPath(cmd)
+		} else {
+			fmt.Fprintf(os.Stdout, "%v is a shell builtin\n", cmd)
+		}*/
+		handleCat(parts)
 	default:
+		fmt.Println("cat")
 		err := Execute(str)
 		if err != nil {
 			fmt.Printf("%s: command not found\n", parts[0])
