@@ -37,6 +37,40 @@ func ParseCommand(str string) {
 		os.Exit(exitCode)
 	case "echo":
 		output := strings.Join(parts[1:], " ")
+		//fmt.Printf("%s\n", output)
+		parseSingleQuotes := func(str string) string {
+			var quoteCount int
+			var inSpace bool
+			var returnStr strings.Builder
+ 			for _, runeValue := range str {
+				if runeValue == '\'' {
+					quoteCount++
+					continue
+				}
+				if (runeValue == '\'') {
+					quoteCount--
+					continue
+				}
+				if quoteCount % 2 == 0 && runeValue == ' ' && inSpace {
+					continue
+				}
+				if runeValue == ' ' {
+					inSpace = true
+					returnStr.WriteString(string(runeValue))
+				} else {
+					inSpace = false
+				}
+				
+				returnStr.WriteString(string(runeValue))
+			}
+
+			if quoteCount % 2 != 0 {
+				panic("Unmatched single quotes")
+			}
+
+			return returnStr.String()
+		}
+		output = parseSingleQuotes(output)
 		fmt.Printf("%s\n", output)
 	case "cd":
 		if parts[1] == "~" {
