@@ -37,7 +37,6 @@ func ParseCommand(str string) {
 		os.Exit(exitCode)
 	case "echo":
 		output := strings.Join(parts[1:], " ")
-		//fmt.Printf("%s\n", output)
 		parseSingleQuotes := func(str string) string {
 			var quoteCount int
 			var inSpace bool
